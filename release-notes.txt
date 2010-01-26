@@ -1,0 +1,103 @@
+1.2.3 (Development)
+- Modifed the order of execution of eventDrop and eventRender so that drop callback occurs before rendering.
+
+1.2.2 (2009-10-30)
+- Fixed inconsistent bug with dropping events in IE7/8 causing a js error
+- Updated the way that events that overlap are organised if using the overlapEventsSeperate option (thanks Yann)
+- Fixed bug where when resizing and overlapping events is enabled, the layout of overlapping of events wasn't being recalculated
+- Fixed bug where deleting existing or unsaved events that were overlapping was not recalcuating the layout of remaining events
+- Fixed bug where calendar was not honouring the allowCalEventOverlap = false option when creating new or updating events from dialog (Issue 84)
+- Added 'daysToShow' config option to optionally only display a limited number of days in a week. (thanks jura khrapunov)
+- Made change that prevents dragged events from being resized when the event has resizing disabled and overlapping is switched off. (Issue 70)
+- Added proper scoping of css to the calendar using 'wc' prefix for all class names.
+- Fixed problem with scrolling to hour if business hours are restricted
+
+
+Once again, thanks for all contributions, suggestions and help in the google group!
+
+
+1.2.1 
+- Added public method 'getData' that returns the value of a named config option.
+- Added public method 'clear' that clears all calendar events from the calendar.
+- Added eventDrag callback
+- Added support for 24 hour timeslot display as an alternative to AM / PM 12 hour day. (thanks dozebox)
+- Added eventAfterRender callback
+- Added support for weeks starting on any day of the week (thanks Bramus!)
+- Added better overlapping event support with the ability to have staggered or parallel layout of overlapping events. (thanks Roderik)
+- Hovering over overlapping events brings them into focus (thanks Roderik)
+- Added methods for formatting dates and times using the calendar config or by passing in date / time formats.
+- Modified logic for 'scrollToTime' to scroll to the time of the reference date of the week.
+
+
+
+
+**Thanks to everyone who logged issues and made suggestions in this release. 
+
+
+2009-06-19 - 1.2 
+- Added better layout support for overlapping of events
+- Added ability to supply formatters for date and time
+- Added improved demo with creation / editing of events using jquery ui.
+- Added option to only display hours defined in the 'businessHours' config option.
+- Migrated code base to extend jquery-ui widget.
+- Improved inline method documentation.
+- Added 'readonly' config option to flag the entire calendar as readonly, preventing creation, dragging, dropping and resizing of events.
+- Added ability to configure day, month names for better i18n support
+- Fixed bug with IE7 resizing once an event gets to 2 timeslots or smaller
+
+ 
+2009-06-08 - 1.1.3
+- Removed console.log that was causing issues in IE.
+- Fixed an issue with nav buttons in certain environments
+
+
+2009-05-21 - 1.1.2
+- Fixed problem in safari and chrome where new events where not being created due to lack of event bubbling of mousedown and mouseup events.
+
+2009-05-17- 1.1.1
+- Fixed problem with calculation of end date passed to data functions / url
+- Updating scrolling to hour to only occur on first render
+- Added code to check for changed options after loading data before actually re-rendering the calendar.
+
+
+2009-05-16 - 1.1
+- Extended the events data structure to allow options to be passed back to the calendar with event data. This has 
+	resulted in a config option name change. The events option is now called 'data'. The data option can be either an array 
+	of calendar events or an object containing a property called 'events' which is the events data array. The data option 
+	can also contain an additional property called 'options'. Any options passed with the data will replace the current options 
+	in the calendar and force a re-render of the calendar. This is very useful in cases where the calendar layout needs to change for 
+	different data sets. For example, a calendar that is delegated but each owner has their own preference for timeslots per hour.
+- Fixed problem where errors were raised due to missing mouseover / mouseout events on calEvents.
+
+2009-05-12 - 1.0
+- Added support for preventing overlapping calendar events
+- Internal refactoring and cleanup including moving standard events to use delegation
+
+2009-05-10 - 1.0-alpha-4
+- Fixed problem caused by window resize event binding hanging around after calendar is removed from the DOM.
+- Wasn't returning a reference to the original jquery plugin object so chaining wasn't possible
+- Added calendarPreLoad and calendarPostLoad events that are called before and after events get loaded into the calendar.
+- Removed calendarRendered event as it was superseded by the calendarPostLoad event
+- Fixed bug in calendar scrolling to hour of day.
+- Added scrollToHourMillis config option for setting the duration of the scroll to hour of day animation. 
+- Fixed problem where the newEvent event was triggered multiple times after navigating through weeks.
+- Fixed problem where dragging an event caused an event click to be triggered on drop instead of a dropped event.
+- Fixed issue in IE7 where width of calendar was not taking into account the width of the vertical scrollbar, causing a horizontal scrollbar to appear
+
+2009-05-07 - 1.0-alpha-3 
+
+- Tightened up some of the rendering to cater to different configuration.
+- Added timeslotHeight config property so you can can specify the height of calendar time slots.
+- Fixed problem where resizing an event causes a new event to be created  
+- Fixed problem with click event  for calendar events firing twice.
+
+
+2009-05-06 - 1.0-alpha-2
+ - Removed jQuery UI Theme from source in favour of google hosted theme
+ - Fixed bug with parsing dates in events supplied as milliseconds
+ - Added minified and yui compressed versions of javascript
+ - Fixed bug where current day remained highlighted after navigating to next / prev weeks
+
+
+2009-05-05 - 1.0-alpha-1
+ - Initial Release
