@@ -1,6 +1,7 @@
 1.2.3 (Development)
 - Modifed the order of execution of eventDrop and eventRender so that drop callback occurs before rendering.
 
+
 1.2.2 (2009-10-30)
 - Fixed inconsistent bug with dropping events in IE7/8 causing a js error
 - Updated the way that events that overlap are organised if using the overlapEventsSeperate option (thanks Yann)
