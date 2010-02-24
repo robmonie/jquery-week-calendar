@@ -1294,7 +1294,17 @@
          for (var i = 0; i < format.length; i++) {
             var curChar = format.charAt(i);
             if ($.isFunction(this._replaceChars[curChar])) {
-               returnStr += this._replaceChars[curChar](date, options);
+	           var res = this._replaceChars[curChar](date, options);
+	           if (res === '00') {
+		          //remove previous character
+		          returnStr = returnStr.slice(0, -1);
+		       }
+		       else {
+                   while (res[0]==='0') {
+                     res = res.slice(1)      
+                   }
+	               returnStr += res;		
+	           }
             } else {
                returnStr += curChar;
             }
