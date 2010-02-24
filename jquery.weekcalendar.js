@@ -1051,7 +1051,15 @@
       _refreshEventDetails : function(calEvent, $calEvent) {
          var self = this;
          var options = this.options;
-         $calEvent.find(".wc-time").html(self._formatDate(calEvent.start, options.timeFormat) + options.timeSeparator + self._formatDate(calEvent.end, options.timeFormat));
+         var one_hour = 3600000;
+         var eventTooShort = calEvent.end.getTime()-calEvent.start.getTime() <= (one_hour/options.timeslotsPerHour);
+         if (eventTooShort){
+           console.log("CHANGING ", calEvent.title);
+           $calEvent.find(".wc-time").html(self._formatDate(calEvent.start, options.timeFormat) + ": " + calEvent.title);
+         }
+         else {
+           $calEvent.find(".wc-time").html(self._formatDate(calEvent.start, options.timeFormat) + options.timeSeparator + self._formatDate(calEvent.end, options.timeFormat));
+         }
          $calEvent.find(".wc-title").html(calEvent.title);
          $calEvent.data("calEvent", calEvent);
       },
