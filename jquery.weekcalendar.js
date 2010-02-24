@@ -1054,7 +1054,6 @@
          var one_hour = 3600000;
          var eventTooShort = calEvent.end.getTime()-calEvent.start.getTime() <= (one_hour/options.timeslotsPerHour);
          if (eventTooShort){
-           console.log("CHANGING ", calEvent.title);
            $calEvent.find(".wc-time").html(self._formatDate(calEvent.start, options.timeFormat) + ": " + calEvent.title);
          }
          else {
