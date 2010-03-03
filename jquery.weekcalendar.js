@@ -23,6 +23,7 @@
          date: new Date(),
          timeFormat : "h:i a",
          dateFormat : "M d, Y",
+         alwaysDisplayTimeMinutes: true,
          use24Hour : false,
          daysToShow : 7,
          firstDayOfWeek : 0, // 0 = Sunday, 1 = Monday, 2 = Tuesday, ... , 6 = Saturday
@@ -1052,8 +1053,8 @@
          var self = this;
          var options = this.options;
          var one_hour = 3600000;
-         var eventTooShort = calEvent.end.getTime()-calEvent.start.getTime() <= (one_hour/options.timeslotsPerHour);
-         if (eventTooShort){
+         var displayTitleWithTime = calEvent.end.getTime()-calEvent.start.getTime() <= (one_hour/options.timeslotsPerHour);
+         if (displayTitleWithTime){
            $calEvent.find(".wc-time").html(self._formatDate(calEvent.start, options.timeFormat) + ": " + calEvent.title);
          }
          else {
@@ -1295,20 +1296,19 @@
             var curChar = format.charAt(i);
             if ($.isFunction(this._replaceChars[curChar])) {
 	           var res = this._replaceChars[curChar](date, options);
-	           if (res === '00') {
+               console.log(res);
+	           if (res === '00' && options.alwaysDisplayTimeMinutes === false) {
 		          //remove previous character
 		          returnStr = returnStr.slice(0, -1);
-		       }
-		       else {
-                   while (res[0]==='0') {
-                     res = res.slice(1)      
-                   }
-	               returnStr += res;		
+		        } else {
+                 
+	               returnStr += res;
 	           }
             } else {
                returnStr += curChar;
             }
          }
+
          return returnStr;
       },
 
