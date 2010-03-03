@@ -1,6 +1,8 @@
 1.2.3 (Development)
 - Modifed the order of execution of eventDrop and eventRender so that drop callback occurs before rendering.
-
+- Migrated to jquery-ui-1.8 and jquery 1.4 (no longer supports previous versions)
+- Fixed daylight savings problem
+- Added support for modifying calendar options on the fly.
 
 1.2.2 (2009-10-30)
 - Fixed inconsistent bug with dropping events in IE7/8 causing a js error

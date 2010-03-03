@@ -19,15 +19,83 @@
 
    $.widget("ui.weekCalendar", {
 
+       options : {
+         date: new Date(),
+         timeFormat : "h:i a",
+         dateFormat : "M d, Y",
+         use24Hour : false,
+         daysToShow : 7,
+         firstDayOfWeek : 0, // 0 = Sunday, 1 = Monday, 2 = Tuesday, ... , 6 = Saturday
+         useShortDayNames: false,
+         timeSeparator : " to ",
+         startParam : "start",
+         endParam : "end",
+         businessHours : {start: 8, end: 18, limitDisplay : false},
+         newEventText : "New Event",
+         timeslotHeight: 20,
+         defaultEventLength : 2,
+         timeslotsPerHour : 4,
+         buttons : true,
+         buttonText : {
+            today : "today",
+            lastWeek : "&nbsp;&lt;&nbsp;",
+            nextWeek : "&nbsp;&gt;&nbsp;"
+         },
+         scrollToHourMillis : 500,
+         allowCalEventOverlap : false,
+         overlapEventsSeparate: false,
+         readonly: false,
+         draggable : function(calEvent, element) {
+            return true;
+         },
+         resizable : function(calEvent, element) {
+            return true;
+         },
+         eventClick : function() {
+         },
+         eventRender : function(calEvent, element) {
+            return element;
+         },
+         eventAfterRender : function(calEvent, element) {
+            return element;
+         },
+         eventDrag : function(calEvent, element) {
+         },
+         eventDrop : function(calEvent, element) {
+         },
+         eventResize : function(calEvent, element) {
+         },
+         eventNew : function(calEvent, element) {
+         },
+         eventMouseover : function(calEvent, $event) {
+         },
+         eventMouseout : function(calEvent, $event) {
+         },
+         calendarBeforeLoad : function(calendar) {
+         },
+         calendarAfterLoad : function(calendar) {
+         },
+         noEvents : function() {
+         },
+         shortMonths : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+         longMonths : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+         shortDays : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+         longDays : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+      },
+
       /***********************
        * Initialise calendar *
        ***********************/
-      _init : function() {
+      _create : function() {
+
          var self = this;
          self._computeOptions();
          self._setupEventDelegation();
+
          self._renderCalendar();
+
          self._loadCalEvents();
+
          self._resizeCalendar();
          self._scrollToHour(self.options.date.getHours());
 
@@ -37,6 +105,7 @@
          });
 
       },
+
 
       /********************
        * public functions *
@@ -179,13 +248,41 @@
          }
       },
 
+
+
+
+
+/*
       getData : function(key) {
          return this._getData(key);
       },
+      */
 
       /*********************
        * private functions *
        *********************/
+
+
+      _setOption: function(key, value) {
+         var self = this;
+         if(self.options[key] != value) {
+
+            // this could be made more efficient at some stage by caching the
+            // events array locally in a store but this should be done in conjunction
+            // with a proper binding model.
+
+            var currentEvents = $.map(self.element.find(".wc-cal-event"), function() {
+               return $(this).data("calEvent");
+            });
+
+            var newOptions = {};
+            newOptions[key] = value;
+            self._renderEvents({events:currentEvents, options: newOptions}, self.element.find(".wc-day-column-inner"))
+        }
+
+	   },
+      
+
       // compute dynamic options based on other config values
       _computeOptions : function() {
 
@@ -447,9 +544,13 @@
 
          var date, weekStartDate, endDate, $weekDayColumns;
          var self = this;
+
+
+
          var options = this.options;
          date = dateWithinWeek || options.date;
          weekStartDate = self._dateFirstDayOfWeek(date);
+
          weekEndDate = self._dateLastMilliOfWeek(date);
 
          options.calendarBeforeLoad(self.element);
@@ -529,7 +630,7 @@
       /*
        * Render the events into the calendar
        */
-      _renderEvents : function (events, $weekDayColumns) {
+      _renderEvents : function (data, $weekDayColumns) {
 
          this._clearCalendar();
 
@@ -537,16 +638,17 @@
          var options = this.options;
          var eventsToRender;
 
-         if ($.isArray(events)) {
-            eventsToRender = self._cleanEvents(events);
-         } else if (events.events) {
-            eventsToRender = self._cleanEvents(events.events);
+         if ($.isArray(data)) {
+            eventsToRender = self._cleanEvents(data);
+         } else if (data.events) {
+            eventsToRender = self._cleanEvents(data.events);
          }
-         if (events.options) {
+          
+         if (data.options) {
 
             var updateLayout = false;
             //update options
-            $.each(events.options, function(key, value) {
+            $.each(data.options, function(key, value) {
                if (value !== options[key]) {
                   options[key] = value;
                   updateLayout = true;
@@ -883,7 +985,10 @@
                var top = Math.round(parseInt(ui.position.top));
                var eventDuration = self._getEventDurationFromPositionedEventElement($weekDay, $calEvent, top);
                var calEvent = $calEvent.data("calEvent");
-               var newCalEvent = $.extend(true, {start: eventDuration.start, end: eventDuration.end}, calEvent);
+
+                
+
+               var newCalEvent = $.extend(true, {}, calEvent, {start: eventDuration.start, end: eventDuration.end});
                self._adjustForEventCollisions($weekDay, $calEvent, newCalEvent, calEvent, true);
                var $weekDayColumns = self.element.find(".wc-day-column-inner");
 
@@ -924,7 +1029,7 @@
             stop :function(event, ui) {
                var $calEvent = ui.element;
                var newEnd = new Date($calEvent.data("calEvent").start.getTime() + ($calEvent.height() / options.timeslotHeight) * options.millisPerTimeslot);
-               var newCalEvent = $.extend(true, {start: calEvent.start, end: newEnd}, calEvent);
+               var newCalEvent = $.extend(true, {}, calEvent, {start: calEvent.start, end: newEnd});
                self._adjustForEventCollisions($weekDay, $calEvent, newCalEvent, calEvent);
 
                self._refreshEventDetails(newCalEvent, $calEvent);
@@ -1069,23 +1174,37 @@
       /*
        * returns the date on the first millisecond of the week
        */
-      _dateFirstDayOfWeek : function(date) {
+     /* _dateFirstDayOfWeek : function(date) {
          var self = this;
          var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
          var millisToSubtract = self._getAdjustedDayIndex(midnightCurrentDate) * 86400000;
          return new Date(midnightCurrentDate.getTime() - millisToSubtract);
 
-      },
+      },*/
+
+      _dateFirstDayOfWeek : function(date) {
+           var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
+           return midnightCurrentDate;
+       },
+
+       /*
+       * returns the date on the first millisecond of the last day of the week
+       */
+       _dateLastDayOfWeek : function(date) {
+           var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + (6 - date.getDay()));
+           return midnightCurrentDate;
+       },
 
       /*
        * returns the date on the first millisecond of the last day of the week
        */
-      _dateLastDayOfWeek : function(date) {
+      /*_dateLastDayOfWeek : function(date) {
          var self = this;
          var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
          var millisToAdd = (6 - self._getAdjustedDayIndex(midnightCurrentDate)) * MILLIS_IN_DAY;
          return new Date(midnightCurrentDate.getTime() + millisToAdd);
       },
+      */
 
       /*
        * gets the index of the current day adjusted based on options
@@ -1296,70 +1415,7 @@
 
    $.extend($.ui.weekCalendar, {
       version: '1.2.2-pre',
-      getter: ['getTimeslotTimes', 'getData', 'formatDate', 'formatTime'],
-      defaults: {
-         date: new Date(),
-         timeFormat : "h:i a",
-         dateFormat : "M d, Y",
-         use24Hour : false,
-         daysToShow : 7,
-         firstDayOfWeek : 0, // 0 = Sunday, 1 = Monday, 2 = Tuesday, ... , 6 = Saturday
-         useShortDayNames: false,
-         timeSeparator : " to ",
-         startParam : "start",
-         endParam : "end",
-         businessHours : {start: 8, end: 18, limitDisplay : false},
-         newEventText : "New Event",
-         timeslotHeight: 20,
-         defaultEventLength : 2,
-         timeslotsPerHour : 4,
-         buttons : true,
-         buttonText : {
-            today : "today",
-            lastWeek : "&nbsp;&lt;&nbsp;",
-            nextWeek : "&nbsp;&gt;&nbsp;"
-         },
-         scrollToHourMillis : 500,
-         allowCalEventOverlap : false,
-         overlapEventsSeparate: false,
-         readonly: false,
-         draggable : function(calEvent, element) {
-            return true;
-         },
-         resizable : function(calEvent, element) {
-            return true;
-         },
-         eventClick : function() {
-         },
-         eventRender : function(calEvent, element) {
-            return element;
-         },
-         eventAfterRender : function(calEvent, element) {
-            return element;
-         },
-         eventDrag : function(calEvent, element) {
-         },
-         eventDrop : function(calEvent, element) {
-         },
-         eventResize : function(calEvent, element) {
-         },
-         eventNew : function(calEvent, element) {
-         },
-         eventMouseover : function(calEvent, $event) {
-         },
-         eventMouseout : function(calEvent, $event) {
-         },
-         calendarBeforeLoad : function(calendar) {
-         },
-         calendarAfterLoad : function(calendar) {
-         },
-         noEvents : function() {
-         },
-         shortMonths : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-         longMonths : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-         shortDays : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-         longDays : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-      }
+
    });
 
    var MILLIS_IN_DAY = 86400000;
