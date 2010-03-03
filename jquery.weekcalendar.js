@@ -921,7 +921,7 @@
                adjustedEnd = currentCalEvent.start;
             }
             //has been dropped inside existing event with same or larger duration
-            if (! oldCalEvent.resizable || (newCalEvent.end.getTime() <= currentCalEvent.end.getTime()
+            if (oldCalEvent.resizable == false || (newCalEvent.end.getTime() <= currentCalEvent.end.getTime()
                   && newCalEvent.start.getTime() >= currentCalEvent.start.getTime())) {
 
                adjustedStart = oldCalEvent.start;
