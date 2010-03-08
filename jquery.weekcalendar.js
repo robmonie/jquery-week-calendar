@@ -1182,37 +1182,31 @@
       /*
        * returns the date on the first millisecond of the week
        */
-     /* _dateFirstDayOfWeek : function(date) {
-         var self = this;
-         var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-         var millisToSubtract = self._getAdjustedDayIndex(midnightCurrentDate) * 86400000;
-         return new Date(midnightCurrentDate.getTime() - millisToSubtract);
-
-      },*/
 
       _dateFirstDayOfWeek : function(date) {
-           var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay());
-           return midnightCurrentDate;
-       },
+         var self = this;
+         var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+         var adjustedDate = new Date(midnightCurrentDate);
+         adjustedDate.setDate(adjustedDate.getDate() - self._getAdjustedDayIndex(midnightCurrentDate));
+
+         return adjustedDate;
+
+      },
 
        /*
        * returns the date on the first millisecond of the last day of the week
        */
        _dateLastDayOfWeek : function(date) {
-           var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() + (6 - date.getDay()));
-           return midnightCurrentDate;
-       },
 
-      /*
-       * returns the date on the first millisecond of the last day of the week
-       */
-      /*_dateLastDayOfWeek : function(date) {
+
          var self = this;
          var midnightCurrentDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-         var millisToAdd = (6 - self._getAdjustedDayIndex(midnightCurrentDate)) * MILLIS_IN_DAY;
-         return new Date(midnightCurrentDate.getTime() + millisToAdd);
-      },
-      */
+         var adjustedDate = new Date(midnightCurrentDate);
+         adjustedDate.setDate(adjustedDate.getDate() + (6 - this._getAdjustedDayIndex(midnightCurrentDate)));
+
+         return adjustedDate;
+          
+       },
 
       /*
        * gets the index of the current day adjusted based on options
@@ -1296,7 +1290,7 @@
             var curChar = format.charAt(i);
             if ($.isFunction(this._replaceChars[curChar])) {
 	           var res = this._replaceChars[curChar](date, options);
-               console.log(res);
+
 	           if (res === '00' && options.alwaysDisplayTimeMinutes === false) {
 		          //remove previous character
 		          returnStr = returnStr.slice(0, -1);
